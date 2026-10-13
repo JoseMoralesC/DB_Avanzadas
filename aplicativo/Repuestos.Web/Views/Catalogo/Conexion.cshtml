@@ -1,0 +1,4 @@
+@model BaseActiva
+@{ ViewData["Title"] = "Conexion activa"; }
+<div class="page-heading"><div><p class="eyebrow">INFRAESTRUCTURA</p><h1>Conexion activa</h1></div><a asp-action="Conexion" class="icon-button" title="Actualizar" aria-label="Actualizar"><i data-lucide="refresh-cw"></i></a></div>
+<dl class="connection"><dt>Servidor</dt><dd>@Model.Servidor</dd><dt>Base de datos</dt><dd>@Model.Base</dd><dt>Replica</dt><dd>@Model.Estado</dd></dl>

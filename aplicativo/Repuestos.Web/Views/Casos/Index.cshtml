@@ -1,0 +1,18 @@
+@model MisCasosViewModel
+@{ ViewData["Title"] = "Mis casos"; var moneda = CultureInfo.GetCultureInfo("es-CR"); }
+<div class="page-heading"><div><p class="eyebrow">ASEGURADORA</p><h1>Mis casos</h1></div></div>
+@if (Model.Casos.Count == 0) { <div class="empty"><i data-lucide="folder-open"></i><h2>Sin casos registrados</h2></div> }
+else
+{
+    <div class="table-scroll"><table><thead><tr><th>Caso</th><th>Placa</th><th>Estado</th><th>Apertura</th></tr></thead><tbody>
+    @foreach (var item in Model.Casos) { <tr><td>#@item.IdCaso</td><td>@item.Placa</td><td>@item.Estado</td><td>@item.FechaApertura.ToString("dd/MM/yyyy")</td></tr> }
+    </tbody></table></div>
+}
+<h2 class="section-title">Cotizaciones</h2>
+@if (Model.Cotizaciones.Count == 0) { <p class="muted">Sin cotizaciones registradas.</p> }
+else
+{
+    <div class="table-scroll"><table><thead><tr><th>Cotizacion</th><th>Caso</th><th>Estado</th><th class="numeric">Total</th></tr></thead><tbody>
+    @foreach (var item in Model.Cotizaciones) { <tr><td>#@item.IdCotizacion</td><td>#@item.IdCaso</td><td>@item.Estado</td><td class="numeric">@item.Total.ToString("C2", moneda)</td></tr> }
+    </tbody></table></div>
+}

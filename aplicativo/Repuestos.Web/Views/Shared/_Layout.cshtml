@@ -1,0 +1,32 @@
+@{
+    var personal = User.IsInRole("Administrador") || User.IsInRole("Empleado");
+}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@ViewData["Title"] | Repuestos</title>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <script src="~/js/lucide.min.js" defer></script>
+    <script src="~/js/site.js" asp-append-version="true" defer></script>
+</head>
+<body>
+    <header class="header">
+        <a class="brand" asp-controller="Catalogo" asp-action="Index"><i data-lucide="wrench"></i> Repuestos <span>Automotrices</span></a>
+        @if (User.Identity?.IsAuthenticated == true)
+        {
+            <nav aria-label="Principal">
+                <a asp-controller="Catalogo" asp-action="Index">Catalogo</a>
+                @if (User.IsInRole("Cliente")) { <a asp-controller="Casos" asp-action="Index">Mis casos</a> }
+                @if (personal) { <a asp-controller="Catalogo" asp-action="Conexion">Conexion</a> }
+            </nav>
+            <div class="account"><span>@User.Identity.Name <small>@User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value</small></span>
+                <form asp-controller="Cuenta" asp-action="Salir" method="post"><button class="icon-button" title="Cerrar sesion" aria-label="Cerrar sesion"><i data-lucide="log-out"></i></button></form>
+            </div>
+        }
+    </header>
+    <main class="container">@RenderBody()</main>
+    <footer>Repuestos Automotrices <span>TI-156 · Bases de Datos Avanzadas</span></footer>
+</body>
+</html>

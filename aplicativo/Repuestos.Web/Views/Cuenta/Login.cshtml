@@ -1,0 +1,12 @@
+@model LoginForm
+@{ ViewData["Title"] = "Iniciar sesion"; }
+<section class="login">
+    <div class="login-title"><i data-lucide="key-round"></i><h1>Iniciar sesion</h1><p>Repuestos Automotrices</p></div>
+    <form method="post" class="login-form">
+        <div asp-validation-summary="ModelOnly" class="validation" role="alert"></div>
+        <input asp-for="ReturnUrl" type="hidden" />
+        <label asp-for="Correo"></label><input asp-for="Correo" autocomplete="username" autofocus /><span asp-validation-for="Correo" class="validation"></span>
+        <label asp-for="Contrasena"></label><input asp-for="Contrasena" value="" autocomplete="current-password" /><span asp-validation-for="Contrasena" class="validation"></span>
+        <button class="primary" type="submit">Ingresar <i data-lucide="arrow-right"></i></button>
+    </form>
+</section>
