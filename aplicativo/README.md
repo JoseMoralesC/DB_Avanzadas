@@ -23,6 +23,8 @@ es `100.124.109.126,15002`, base `RepuestosAutomotrices`, autenticacion SQL Serv
 Mantener comillas alrededor de la cadena para preservar espacios y caracteres.
 Si la contrasena contiene delimitadores de SQL como punto y coma, tambien debe
 citarse dentro de la cadena de conexion segun el formato de SQL Server.
+Cuando el laboratorio tenga listener de Always On, reemplazar el servidor directo
+por el listener y conservar `MultiSubnetFailover=true`.
 
 ```powershell
 dotnet run --project aplicativo/Repuestos.Web -- --environment Development
@@ -113,6 +115,26 @@ concurrencia y aislamiento sobre SQL Server real, en la base temporal.
 Rechaza otras bases y exige que se ejecute con el script de preparacion.
 Estas comprobaciones no sustituyen pruebas de Always On.
 
-La consigna de cuatro paginas citada por el roadmap aun no esta en el repositorio.
-Contrastar el alcance y la division de verificacion del login con esa consigna
-antes de cerrar la entrega.
+La consigna de cuatro paginas esta en docs/requerimientos/Proyecto 1.pdf.
+El cierre de requisitos, evidencia SQL y exportacion se documenta en
+docs/validacion/Cumplimiento_Proyecto1.md.
+
+Para probar tambien la carga integral dos veces en la base temporal:
+
+```powershell
+dotnet build aplicativo/Repuestos.SqlTools
+& ./aplicativo/Repuestos.Checks/Validar-SqlLocal.ps1 -DatosIntegrales
+```
+
+Repuestos.SqlTools usa la conexion actual de .env o la variable de entorno;
+`--probar` valida tablas y consultas; `--aplicar` instala complementos y completa
+los datos de prueba; `--sin-cambios` exige que una repeticion no cambie conteos ni
+unidades de inventario. No muestra credenciales ni hashes.
+
+El login nuevo recibe la clave original en SQL y la valida con un verificador
+CLR compatible con los hashes actuales. Instalacion y requisitos:
+db/Jose/Clr/README.md. Para comprobar ese contrato y el aplicativo en SQL local:
+
+```powershell
+& ./aplicativo/Repuestos.Checks/Validar-SqlLocal.ps1 -LoginSql -DatosIntegrales -Navegador
+```

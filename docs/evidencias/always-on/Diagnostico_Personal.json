@@ -1,0 +1,21 @@
+﻿{
+    "FechaUTC":  "2026-10-13T21:07:16.1420229Z",
+    "Equipo":  "Personal",
+    "Windows":  "Microsoft Windows 10 Pro",
+    "Edicion":  "Professional",
+    "RAM_GB":  15.6,
+    "Nucleos":  4,
+    "Hilos":  8,
+    "VirtualizacionFirmware":  false,
+    "SLAT":  false,
+    "VMMonitor":  false,
+    "HypervisorDetectado":  true,
+    "NotaCPU":  "El hipervisor esta activo; Windows puede ocultar los indicadores VT/SLAT del procesador.",
+    "ServicioHyperV":  "Running",
+    "Discos":  [
+                   {
+                       "DeviceID":  "C:",
+                       "Libre_GB":  86.1
+                   }
+               ]
+}

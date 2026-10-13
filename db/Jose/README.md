@@ -10,6 +10,11 @@ Ejecutar en SSMS, en este orden:
 5. `db/Jose/02_consultas.sql`.
 6. `db/Jose/03_integracion_repuestos.sql`.
 7. `db/Jose/04_datos_iniciales.sql` (carga opcional de datos ficticios del catalogo).
+8. `db/JeanC/04_integridad_perfiles.sql`.
+9. `db/Jose/05_consultas_consigna.sql`.
+10. `db/JeanC/05_datos_prueba_integrales.sql` (mediante SqlTools, que suministra el hash demo).
+11. `db/Christian/01_permisos_backend.sql` (ajustando usuario y contrasena).
+12. `db/Christian/02_verificacion_alta_disponibilidad.sql` (evidencia antes/despues de conmutar).
 
 Los tres primeros scripts de Jose se pueden volver a ejecutar con CREATE OR ALTER.
 El cuarto inserta solamente datos faltantes en una transaccion y puede repetirse.
@@ -22,14 +27,25 @@ una base compartida que ya contiene datos.
 IdUsuario, Correo, HashContrasena, Rol, IdEmpleado, IdAseguradora, Nombre.
 Solo devuelve cuentas activas con un perfil unico y coherente con su rol.
 La aplicacion verifica el hash con PasswordHasher de ASP.NET Core y llama
-`LoginUsuario(@Correo, @HashVerificado)` para confirmar la cuenta y la
-credencial. Este segundo procedimiento no devuelve el hash.
+`LoginUsuario(@Correo, @Clave, @Valido OUTPUT, @HashVerificado)` para validar
+independientemente la clave original dentro de SQL mediante dbo.VerificarClave.
+Este segundo procedimiento no devuelve el hash.
 
 La cuenta SQL es una cuenta tecnica del backend. Nunca entregar sus
 credenciales a clientes ni exponer directamente estos procedimientos por HTTP.
 La autorizacion por rol ocurre en el servidor web; poseer el hash no debe
-ser una via publica de inicio de sesion. Esta separacion debe contrastarse con
-la consigna de Proyecto 1 si exige verificar la contrasena dentro de SQL.
+ser una via publica de inicio de sesion. LoginUsuario verifica la clave original,
+cuenta activa, rol y perfil y devuelve @Valido BIT OUTPUT (1 o 0).
+El hash opcional detecta cambios de credencial entre las dos verificaciones;
+no permite autenticar sin una clave correcta. La clave viaja como parametro
+NVARCHAR por la conexion SQL cifrada y no se almacena.
+
+`01_autenticacion.sql` mantiene el contrato anterior como preparacion para bases
+sin CLR. El instalador de Clr/Preparar-LoginSql.ps1 agrega el verificador y aplica
+`06_login_clave.sql`, que debe quedar al final. SqlTools --aplicar conserva este
+contrato si el verificador ya existe. El aplicativo detecta la firma nueva;
+su compatibilidad con la firma anterior solo facilita la migracion y no cumple
+por si sola la validacion de clave original exigida por la consigna.
 
 `Usuario.Contrasena` debe almacenar el hash generado por PasswordHasher,
 nunca una contrasena literal. Generarlo con la utilidad de la aplicacion:
@@ -65,10 +81,13 @@ coordinada con Jean Carlo; este avance no los inserta en la base compartida.
   Reaplicar 03_integracion_repuestos.sql actualiza el procedimiento sin reiniciar
   la secuencia ni renombrar los repuestos existentes.
 
-Pendientes de Jean Carlo: datos de prueba, respuesta consistente del resto de
-mantenimientos, cardinalidad de perfiles, coherencia al cambiar roles y regla
-de recepcion/movimientos para evitar duplicar inventario. Pendientes de Christian:
-listener o destino de conexion, permisos SQL y prueba real de conmutacion.
+La carga integral completa los tres registros por tabla y 04_integridad_perfiles.sql
+agrega unicidad de perfiles, coherencia al cambiar roles y proteccion de la bodega
+de una compra con detalles. Los mantenimientos originales conservan sus contratos;
+MantenimientoRepuestoModelo ahora permite modificar la compatibilidad.
+Pendientes de Christian: listener o destino de conexion, permisos SQL y prueba real de conmutacion.
+La carpeta `db/Christian/` deja una plantilla para cerrar esos pendientes sin
+guardar secretos en Git.
 
 ## Primera carga de catalogo
 
@@ -81,6 +100,29 @@ ni cuentas existentes al repetir la carga.
 
 Las existencias son saldos de apertura cargados directamente en Inventario.
 No generar tambien compras o movimientos de entrada para esas mismas unidades.
-La carga no simula compras, ventas ni casos y no completa el requisito de tres
-registros en cada una de las 23 tablas. Esa carga integral se coordina con Jean Carlo
-cuando esten instalados los triggers y definidas las reglas operativas.
+La carga inicial no simula compras, ventas ni casos. La carga integral adicional
+de Jean Carlo completa esos datos despues de instalar los triggers.
+
+## Consultas de la consigna
+
+`EXEC dbo.ConsultarDatos @TipoConsulta = 1;` devuelve la tabla Rol completa.
+El selector 1..23 sigue el orden de tablas de `docs/validacion/Estado_RepuestosAutomotrices.md`.
+Es una consulta administrativa; no se otorga al backend porque Usuario contiene hashes.
+Las consultas filtradas del aplicativo conservan sus restricciones por rol.
+
+## Validacion de la base actual
+
+Desde la raiz, usando .env o ConnectionStrings__Repuestos:
+
+```powershell
+dotnet run --project aplicativo/Repuestos.SqlTools -- --probar
+```
+
+Para instalar objetos complementarios y completar los datos ficticios:
+
+```powershell
+dotnet run --project aplicativo/Repuestos.SqlTools -- --aplicar --probar
+```
+
+La utilidad no crea la base ni reinstala las tablas. Requiere la estructura y
+los mantenimientos existentes. Guarda conteos y resultados sin secretos en docs/validacion.

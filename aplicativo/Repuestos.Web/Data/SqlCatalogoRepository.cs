@@ -66,7 +66,13 @@ public sealed class SqlCatalogoRepository(SqlConnectionFactory factory) : ICatal
         await using var command = SqlConnectionFactory.Procedimiento(connection, "dbo.ConsultarBaseActiva");
         await using var reader = await command.ExecuteReaderAsync(ct);
         if (!await reader.ReadAsync(ct)) throw new InvalidOperationException("Sin informacion de conexion.");
-        return new(reader.GetString(0), reader.GetString(1), reader.GetString(2));
+        return new(
+            reader.GetString(0),
+            reader.GetString(1),
+            reader.GetString(2),
+            reader.FieldCount > 3 && !reader.IsDBNull(3) ? reader.GetString(3) : null,
+            reader.FieldCount > 4 && !reader.IsDBNull(4) ? reader.GetString(4) : null,
+            reader.FieldCount > 5 && !reader.IsDBNull(5) ? reader.GetString(5) : null);
     }
 
     public async Task<MisCasosViewModel> MisCasosAsync(int idUsuario, CancellationToken ct)

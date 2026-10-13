@@ -26,12 +26,14 @@ GO
 
 CREATE OR ALTER PROCEDURE dbo.LoginUsuario
     @Correo VARCHAR(100),
-    @HashVerificado VARCHAR(255)
+    @HashVerificado VARCHAR(255),
+    @Valido BIT = NULL OUTPUT
 AS
 BEGIN
     SET NOCOUNT ON;
     -- El backend verifica PasswordHasher antes de llamar a este procedimiento.
     -- La comparacion binaria confirma que la credencial no cambio entre ambas lecturas.
+    SET @Valido = 0;
     SELECT u.IdUsuario, u.Correo, CAST(NULL AS VARCHAR(255)) AS HashContrasena,
            r.Nombre AS Rol, e.IdEmpleado, a.IdAseguradora,
            COALESCE(e.Nombre, a.Nombre, u.Correo) AS Nombre
@@ -47,5 +49,6 @@ BEGIN
         OR (r.Nombre = 'Cliente'
             AND (SELECT COUNT(*) FROM dbo.Aseguradora WHERE IdUsuario = u.IdUsuario) = 1
             AND NOT EXISTS (SELECT 1 FROM dbo.Empleado WHERE IdUsuario = u.IdUsuario)));
+    IF @@ROWCOUNT = 1 SET @Valido = 1;
 END;
 GO

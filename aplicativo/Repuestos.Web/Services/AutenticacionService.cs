@@ -20,7 +20,7 @@ public sealed class AutenticacionService(IUsuarioRepository usuarios, IPasswordH
         try { resultado = hasher.VerifyHashedPassword(usuario!, usuario?.Hash ?? DummyHash, password); }
         catch (FormatException) { return null; }
         if (usuario is null || resultado == PasswordVerificationResult.Failed) return null;
-        usuario = await usuarios.ConfirmarLoginAsync(usuario.Correo, usuario.Hash, ct);
+        usuario = await usuarios.ConfirmarLoginAsync(usuario.Correo, password, usuario.Hash, ct);
         return usuario is null ? null : CrearPrincipal(usuario);
     }
 

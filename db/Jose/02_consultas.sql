@@ -89,10 +89,41 @@ GO
 CREATE OR ALTER PROCEDURE dbo.ConsultarBaseActiva AS
 BEGIN
     SET NOCOUNT ON;
+    DECLARE @Nodo NVARCHAR(256) = NULL;
+    DECLARE @GrupoDisponibilidad SYSNAME = NULL;
+    DECLARE @EstadoSincronizacion NVARCHAR(60) = NULL;
+
+    IF CONVERT(INT, SERVERPROPERTY('IsHadrEnabled')) = 1
+    BEGIN
+        BEGIN TRY
+            SELECT TOP (1)
+                   @Nodo = ar.replica_server_name,
+                   @GrupoDisponibilidad = ag.name,
+                   @EstadoSincronizacion = drs.synchronization_state_desc
+            FROM sys.dm_hadr_database_replica_states drs
+            JOIN sys.availability_databases_cluster adc
+              ON adc.group_database_id = drs.group_database_id
+            JOIN sys.availability_groups ag
+              ON ag.group_id = adc.group_id
+            LEFT JOIN sys.availability_replicas ar
+              ON ar.replica_id = drs.replica_id
+            WHERE drs.database_id = DB_ID()
+              AND drs.is_local = 1;
+        END TRY
+        BEGIN CATCH
+            SET @EstadoSincronizacion = N'Sin permiso para consultar DMV';
+        END CATCH;
+    END;
+
     SELECT CONVERT(NVARCHAR(128), SERVERPROPERTY('ServerName')) AS Servidor,
            DB_NAME() AS Base,
            CASE sys.fn_hadr_is_primary_replica(DB_NAME())
-               WHEN 1 THEN N'Primaria' WHEN 0 THEN N'Secundaria'
-               ELSE N'Sin grupo de disponibilidad' END AS Estado;
+               WHEN 1 THEN N'Primaria'
+               WHEN 0 THEN N'Secundaria'
+               ELSE N'Sin grupo de disponibilidad'
+           END AS Estado,
+           @Nodo AS Nodo,
+           @GrupoDisponibilidad AS GrupoDisponibilidad,
+           @EstadoSincronizacion AS EstadoSincronizacion;
 END;
 GO
