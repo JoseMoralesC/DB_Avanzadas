@@ -1,0 +1,23 @@
+﻿{
+    "FechaUTC":  "2026-10-13T21:12:23.4938216Z",
+    "Equipo":  "Personal",
+    "Estado":  "Creado",
+    "Switch":  "CasaLAN",
+    "VMs":  [
+                {
+                    "Nombre":  "DC1",
+                    "Id":  "f4cc018a-1b76-4c15-a113-aecc62b38f0a",
+                    "Estado":  "Off",
+                    "Disco":  "C:\\Users\\Personal\\Desktop\\DB_Avanzadas\\.qa\\virtuales\\DC1\\DC1.vhdx",
+                    "ISO":  "C:\\Users\\Personal\\Desktop\\DB_Avanzadas\\.qa\\instaladores\\WindowsServer2022_Evaluation_es-es.iso"
+                },
+                {
+                    "Nombre":  "SQL2",
+                    "Id":  "f0d1b013-56b9-4349-81d4-b6ff38b1ea3f",
+                    "Estado":  "Off",
+                    "Disco":  "C:\\Users\\Personal\\Desktop\\DB_Avanzadas\\.qa\\virtuales\\SQL2\\SQL2.vhdx",
+                    "ISO":  "C:\\Users\\Personal\\Desktop\\DB_Avanzadas\\.qa\\instaladores\\WindowsServer2022_Evaluation_es-es.iso"
+                }
+            ],
+    "Mensaje":  "VMs preparadas con la ISO. Falta instalar Windows Server dentro de ellas."
+}

@@ -1,0 +1,30 @@
+@model CatalogoViewModel
+@{ ViewData["Title"] = "Catalogo"; var personal = User.IsInRole("Administrador") || User.IsInRole("Empleado"); var moneda = CultureInfo.GetCultureInfo("es-CR"); }
+<div class="page-heading"><div><p class="eyebrow">REPUESTOS AUTOMOTRICES</p><h1>Catalogo de repuestos</h1><p class="muted">@Model.Repuestos.Count resultados</p></div>
+    @if (personal) { <a class="button primary" asp-action="Editar"><i data-lucide="plus"></i> Nuevo repuesto</a> }
+</div>
+@if (TempData["Exito"] is string mensaje) { <div class="success" role="status">@mensaje</div> }
+@if (Model.Error is not null) { <div class="validation notice" role="alert">@Model.Error</div> }
+<form method="get" class="filters">
+    <div class="field search"><label for="Texto">Buscar</label><input name="Texto" id="Texto" value="@Model.Filtro.Texto" maxlength="120" placeholder="Nombre o codigo" /></div>
+    <div class="field"><label for="IdCategoria">Categoria</label><select name="IdCategoria" id="IdCategoria"><option value="">Todas</option>@foreach (var item in Model.Categorias) { <option value="@item.Id" selected="@(Model.Filtro.IdCategoria == item.Id)">@item.Nombre</option> }</select></div>
+    <div class="field"><label for="IdMarca">Marca</label><select name="IdMarca" id="IdMarca"><option value="">Todas</option>@foreach (var item in Model.Marcas) { <option value="@item.Id" selected="@(Model.Filtro.IdMarca == item.Id)">@item.Nombre</option> }</select></div>
+    <div class="field"><label for="IdModelo">Modelo</label><select name="IdModelo" id="IdModelo"><option value="">Todos</option>@foreach (var item in Model.Modelos) { <option value="@item.Id" selected="@(Model.Filtro.IdModelo == item.Id)">@item.Nombre</option> }</select></div>
+    <div class="field"><label for="PrecioMaximo">Precio maximo</label><input name="PrecioMaximo" id="PrecioMaximo" type="number" min="0" max="99999999.99" step="0.01" value="@Model.Filtro.PrecioMaximo?.ToString(CultureInfo.InvariantCulture)" /></div>
+    <label class="check"><input name="SoloDisponibles" type="checkbox" value="true" checked="@Model.Filtro.SoloDisponibles" /> Con existencias</label>
+    <button class="icon-button filter-button" title="Aplicar filtros" aria-label="Aplicar filtros"><i data-lucide="search"></i></button>
+    <a class="icon-button" asp-action="Index" title="Limpiar filtros" aria-label="Limpiar filtros"><i data-lucide="rotate-ccw"></i></a>
+</form>
+<div asp-validation-summary="All" class="validation" role="alert"></div>
+@if (Model.Repuestos.Count > 0)
+{
+    <div class="table-scroll"><table><thead><tr><th>Repuesto</th><th>Categoria</th><th class="numeric">Precio</th><th class="numeric">Existencias</th><th>Estado</th>@if (personal) { <th><span class="sr-only">Acciones</span></th> }</tr></thead>
+    <tbody>@foreach (var item in Model.Repuestos)
+    {
+        <tr><td><strong>@item.Nombre</strong><small>@item.Codigo</small></td><td>@item.Categoria</td><td class="numeric">@item.PrecioVenta.ToString("C2", moneda)</td><td class="numeric">@item.Existencias</td><td><span class="status @(item.Activo ? "active" : "inactive")">@(item.Activo ? "Activo" : "Inactivo")</span></td>
+            @if (personal) { <td><a asp-action="Editar" asp-route-id="@item.IdRepuesto" class="icon-button" title="Editar @item.Codigo" aria-label="Editar @item.Codigo"><i data-lucide="pencil"></i></a></td> }
+        </tr>
+    }</tbody></table></div>
+}
+else if (Model.Error is null)
+{ <div class="empty"><i data-lucide="package-search"></i><h2>Sin resultados</h2><p>No hay repuestos que coincidan con la consulta.</p></div> }

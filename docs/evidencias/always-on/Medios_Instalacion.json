@@ -1,0 +1,22 @@
+{
+  "Fecha": "2026-10-13",
+  "ZonaHoraria": "America/Mexico_City",
+  "Archivos": [
+    {
+      "Archivo": ".qa/instaladores/WindowsServer2022_Evaluation_es-es.iso",
+      "Origen": "https://go.microsoft.com/fwlink/p/?LinkID=2195280&clcid=0x40a&country=ES&culture=es-es",
+      "Bytes": 5055336448,
+      "SHA256": "052C7D7785A99DB7C5FF710090050FBD424A2F17312F0C6463E959E4E19CEE98",
+      "Estado": "Descarga completada desde Microsoft Evaluation Center. Huella local registrada; no comparada con un checksum publicado por el fabricante."
+    },
+    {
+      "Archivo": ".qa/instaladores/SQLServer2025_StandardDeveloper.exe",
+      "Origen": "https://go.microsoft.com/fwlink/?clcid=0x409&country=us&culture=en-us&linkid=2344626",
+      "Bytes": 4569136,
+      "SHA256": "F2FDCEA621E29B2DD09E3802FD6FE7664A2037BED02349854CCAE96C4A03BBF1",
+      "FirmaAuthenticode": "Valid",
+      "Firmante": "Microsoft Corporation",
+      "Estado": "Descargado. Es el instalador inicial: aun necesita descargar los archivos del motor SQL."
+    }
+  ]
+}
