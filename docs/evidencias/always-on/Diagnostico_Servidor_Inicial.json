@@ -1,0 +1,28 @@
+{
+  "Origen": "Captura de PowerShell compartida por el usuario en el servidor fisico",
+  "WindowsProductName": "Windows 10 Home Single Language",
+  "OsArchitecture": "64 bits",
+  "HyperVisorPresent": false,
+  "ConsultaVmmsSinResultadoVisible": true,
+  "Adaptadores": [
+    {"Name": "Ethernet", "Status": "Disconnected", "InterfaceDescription": "Realtek PCIe GbE Family Controller"},
+    {"Name": "Wi-Fi", "Status": "Up", "InterfaceDescription": "Realtek RTL8723DE 802.11b/g/n PCIe Adapter"}
+  ],
+  "HyperVSoportadoEnEstaEdicion": false,
+  "Manufacturer": "HP",
+  "Model": "HP Laptop 14-ck0xxx",
+  "VerificacionVirtualizacionVisual": {
+    "BIOS": "Virtualization Technology = Enabled",
+    "AdministradorTareas": "Virtualizacion = Habilitado",
+    "DiscrepanciaCIM": "Consulta CIM previa devuelve False; causa no determinada",
+    "ArranqueVMValidado": false
+  },
+  "CPU": {"Name": "Intel(R) Celeron(R) N4000 CPU @ 1.10GHz", "NumberOfCores": 2, "NumberOfLogicalProcessors": 2, "VirtualizationFirmwareEnabled": false, "SecondLevelAddressTranslationExtensions": true},
+  "Memoria": {"TotalVisibleMemorySizeKB": 8145100, "FreePhysicalMemoryKB": 3265968, "Origen": "Ultima salida CIM compartida por el usuario; disponibilidad puntual"},
+  "DiscoC": {"SizeRemainingBytes": 105585217536, "SizeBytes": 239363497984},
+  "VirtualBoxAbiertoConfirmado": true,
+  "ISOEnServidorConfirmada": true,
+  "ISOEnServidor": {"FullName": "C:\\Users\\Laptop\\Downloads\\SERVER_EVAL_x64FRE_es-es.iso", "Length": 5055336448, "HashVerificado": false},
+  "ConexionFisicaConfirmada": "Wi-Fi",
+  "Pendiente": "Copiar ISO al HP y revisar consumo de memoria antes de arrancar SQL1 de 4 GB; probar puente Wi-Fi y arranque invitado. No ejecutar scripts Hyper-V en este equipo Home."
+}

@@ -32,6 +32,77 @@ _ldap._tcp.dc._msdcs.repuestos.test -> dc1.repuestos.test:389 (prioridad 0,
 peso 100). Validacion local de dominio/servicios/A/SRV completada; no implica
 validacion de conectividad desde SQL1, SQL2 o Tailscale.
 
+## Instalacion y red inicial de SQL2
+
+La captura del usuario confirma Windows Server 2022 Standard Evaluation con
+escritorio instalado en la VM SQL2. Windows conserva su nombre generado.
+ipconfig muestra Ethernet, MAC 00-15-5D-64-07-01, DHCP habilitado,
+192.168.100.11/24, gateway/DNS 192.168.100.1. Test-NetConnection a
+192.168.100.10 TCP 53 devuelve True desde 192.168.100.11. Pendientes
+configuracion DNS de dominio, nombre SQL2, union al dominio y direccion estable
+para el cluster. La prueba TCP no sustituye una consulta DNS A/SRV.
+
+La captura posterior al reinicio confirma Name=SQL2, Domain=repuestos.test,
+PartOfDomain=True y Test-ComputerSecureChannel=True. Ethernet usa el DNS
+192.168.100.10; la consulta SRV previa a la union devolvio DC1 y puerto 389.
+La union al dominio y el canal seguro estan validados. Pendientes direccion
+estable, componentes Failover-Clustering, motor SQL, SQL1 y creacion/validacion
+del cluster y del grupo de disponibilidad.
+
+El usuario confirmo la instalacion de Failover-Clustering con herramientas de
+administracion en SQL2: Success=True, Restart Needed=No, Exit Code=Success.
+Esto instala componentes solamente; no se ha creado el cluster ni configurado
+Always On. Siguiente paso: instalar SQL Server 2025 Standard Developer en SQL2.
+
+Las capturas Ready to Install de SQL2 confirman Standard Developer,
+MSSQLSERVER, Modern_Spanish_CI_AS, modo mixto, administradores locales/dominio,
+max server memory 3584 MB, min 0 MB, MAXDOP 2 y dos archivos de datos TempDB.
+Complete muestra Database Engine Services, SQL Browser, SQL Writer y Setup
+Support Files con Succeeded; instalacion exitosa con actualizaciones de producto.
+Version exacta y servicios activos pendientes de comprobar. No se ha configurado
+Always On ni creado el cluster. SQL1 debe usar la misma intercalacion.
+
+La captura de comprobacion confirma MSSQLSERVER y SQLSERVERAGENT Running /
+Automatic, SQLBrowser Stopped / Disabled. El registro Setup identifica Standard
+Developer Edition, Version y PatchLevel 17.0.1000.7. Falta contrastar mediante
+consulta SQL la version en ejecucion. La instancia SQL original (fuera del
+laboratorio) tenia otra compilacion; no confundirla con la futura VM SQL1.
+
+Las capturas de TCP/IP muestran Enabled=Yes, Listen All=Yes y puerto 1433 en
+IPAll sin puerto dinamico. La prueba posterior desde SQL2 a su propia direccion
+192.168.100.11:1433 devuelve TcpTestSucceeded=True. Confirma acceso TCP local;
+firewall y acceso desde otro equipo siguen pendientes.
+
+Las capturas posteriores confirman regla DBAvanzadas-SQL-TCP1433-LAN creada,
+Enabled=True, perfiles Domain/Private, Inbound/Allow; comando limitado a TCP
+1433 desde 192.168.100.0/24. Desde DC1 (192.168.100.10), la conexion a
+SQL2 192.168.100.11:1433 devuelve TcpTestSucceeded=True. Validado acceso TCP
+entre VMs; autenticacion SQL, Tailscale y disponibilidad siguen pendientes.
+
+## Diagnostico inicial del servidor fisico
+
+La captura del usuario identifica Windows 10 Home Single Language de 64 bits,
+HyperVisorPresent=False y sin salida visible para vmms. Ethernet Realtek PCIe
+GbE esta Disconnected; Wi-Fi Realtek RTL8723DE esta Up. Hyper-V no esta
+soportado en esta edicion; no ejecutar los scripts Hyper-V en este servidor.
+El plan de SQL1 requiere otro virtualizador compatible o un anfitrion alternativo.
+Pendientes comprobar virtualizacion CPU y recursos; preferir red cableada para
+el nodo SQL1. La base original permanece sin cambios.
+
+El usuario confirma Celeron N4000, 2 nucleos/2 procesadores logicos,
+VirtualizationFirmwareEnabled=False y SLAT=True. Memoria visible 8145100 KB
+(aprox. 7.77 GiB), libre 2660168 KB (aprox. 2.54 GiB) en esa medicion.
+No crear todavia la VM SQL1 de 4 GB: primero habilitar virtualizacion y revisar
+presion de memoria del anfitrion sin detener servicios ni modificar la base
+original automaticamente. Modelo BIOS y conexion cableada pendientes.
+
+Modelo confirmado por CIM: HP Laptop 14-ck0xxx. Foto BIOS InsydeH2O muestra
+Virtualization Technology=Enabled; captura posterior de Administrador de tareas
+muestra Virtualizacion=Habilitado. CIM devolvio False anteriormente; causa de
+la discrepancia no establecida. Pendiente validar funcionamiento mediante
+virtualizador. La captura muestra memoria en uso aprox. 4.7/7.8 GB (60%);
+no arrancar SQL1 de 4 GB sin revisar antes disponibilidad y carga del anfitrion.
+
 Preparacion iniciada el 13 de octubre de 2026.
 
 ## Arquitectura propuesta
